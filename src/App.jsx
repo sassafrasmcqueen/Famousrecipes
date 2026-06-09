@@ -4,21 +4,21 @@ function App() {
   const recipes = [
     {
       id: 1,
-      title: 'Levain Bakery Style Cookies',
-      description: 'The thick, gooey, and legendary NYC cookie recreated.',
-      image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&q=80&w=800',
+      title: 'Levain Bakery Chocolate Chip Cookies',
+      description: 'The legendary NYC six-ounce mountain of a cookie. Perfectly craggy on the outside with a thick, gooey center that stays soft for days.',
+      image: '/images/levain-cookies.png',
     },
     {
       id: 2,
       title: 'IKEA Swedish Meatballs',
-      description: 'The original furniture store classic with creamy gravy.',
-      image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=80&w=800',
+      description: 'The ultimate furniture store comfort food. A precise beef-and-pork blend served with the iconic, umami-packed cream sauce.',
+      image: '/images/ikea-meatballs.png',
     },
     {
       id: 3,
-      title: 'Disney Dole Whip',
-      description: 'Refreshing pineapple soft serve from the Magic Kingdom.',
-      image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&q=80&w=800',
+      title: 'Disney Pineapple Dole Whip',
+      description: 'A cult-status tropical soft-serve from the Magic Kingdom. Refreshing, creamy, and surprisingly easy to master at home.',
+      image: '/images/disney-dole-whip.png',
     },
   ]
 
