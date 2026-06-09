@@ -83,7 +83,7 @@ function App() {
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                 />
                 <div className="absolute top-4 right-4 bg-orange-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-                  Digital Card
+                  Digital Card — $2.99
                 </div>
               </div>
               <div className="p-8">
