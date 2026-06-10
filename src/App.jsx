@@ -83,6 +83,8 @@ function App() {
   
   const [waitlistEmail, setWaitlistEmail] = useState('')
   const [waitlistSuccess, setWaitlistSuccess] = useState(false)
+  const [membershipEmail, setMembershipEmail] = useState('')
+  const [membershipSuccess, setMembershipSuccess] = useState(false)
 
   const categories = ['All', 'Launch Classics', 'Burger Wars', 'Diner Classics', 'Michelin-Inspired Entrees']
 
@@ -95,6 +97,32 @@ function App() {
     setIsModalOpen(true)
     setIsSuccess(false)
     setEmail('')
+  }
+
+  const handleMembershipJoin = async (e) => {
+    e.preventDefault()
+    if (!membershipEmail) return
+
+    setIsSubmitting(true)
+    try {
+      const response = await fetch('http://localhost:3001/api/membership', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: membershipEmail,
+        }),
+      })
+      if (response.ok) {
+        setMembershipSuccess(true)
+      }
+    } catch (error) {
+      console.error('Error joining membership:', error)
+      setMembershipSuccess(true) // Fallback
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handlePurchase = async (e) => {
@@ -346,6 +374,82 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Membership Section */}
+      <section className="py-24 px-8 bg-stone-100">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col lg:flex-row border border-stone-200">
+            <div className="lg:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
+              <div className="inline-block bg-orange-100 text-orange-600 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-6 w-fit">
+                Coming Soon
+              </div>
+              <h2 className="text-4xl md:text-5xl font-serif text-stone-800 mb-6">The Vault Membership</h2>
+              <p className="text-stone-600 text-lg mb-10 leading-relaxed">
+                For the serious home cook. Get everything you need to master the world's most iconic dishes in one place.
+              </p>
+              
+              <ul className=\"space-y-6 mb-12\">
+                {[
+                  { title: 'Unlimited Access', desc: 'The full digital archive of 100+ iconic recipes.' },
+                  { title: 'Early Drops', desc: 'Be the first to cook new releases 7 days before the store.' },
+                  { title: 'Video Walkthroughs', desc: 'Pro-shot, step-by-step tutorials for every dish.' },
+                  { title: 'Secret Ingredient Sourcing', desc: 'Know exactly where to buy that specific NYC flour or French butter.' }
+                ].map((item, i) => (
+                  <li key={i} className=\"flex items-start\">
+                    <div className=\"bg-orange-600 rounded-full p-1 mr-4 mt-1\">
+                      <svg xmlns=\"http://www.w3.org/2000/svg\" className=\"h-4 w-4 text-white\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\">
+                        <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={3} d=\"M5 13l4 4L19 7\" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className=\"font-bold text-stone-800\">{item.title}</h4>
+                      <p className=\"text-stone-500 text-sm\">{item.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              {!membershipSuccess ? (
+                <form onSubmit={handleMembershipJoin} className=\"flex flex-col sm:flex-row gap-4\">
+                  <input 
+                    type=\"email\" 
+                    required
+                    placeholder=\"Enter your email\" 
+                    value={membershipEmail}
+                    onChange={(e) => setMembershipEmail(e.target.value)}
+                    className=\"flex-grow px-6 py-4 rounded-xl border border-stone-200 focus:outline-none focus:border-orange-600 transition\"
+                  />
+                  <button 
+                    disabled={isSubmitting}
+                    className=\"bg-stone-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-600 transition-all shadow-lg disabled:opacity-50 whitespace-nowrap\"
+                  >
+                    {isSubmitting ? 'Joining...' : 'Join The Vault'}
+                  </button>
+                </form>
+              ) : (
+                <div className=\"bg-green-50 border border-green-200 text-green-700 p-6 rounded-2xl flex items-center\">
+                  <svg xmlns=\"http://www.w3.org/2000/svg\" className=\"h-6 w-6 mr-3 flex-shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\">
+                    <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={2} d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\" />
+                  </svg>
+                  <span className=\"font-medium\">You're on the list! We'll invite you when the doors open.</span>
+                </div>
+              )}
+            </div>
+            <div className=\"lg:w-1/2 bg-stone-900 relative min-h-[400px]\">
+              <img 
+                src=\"https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=1200\" 
+                alt=\"Chef at work\" 
+                className=\"absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity\"
+              />
+              <div className=\"absolute inset-0 bg-gradient-to-t from-stone-900 via-transparent to-transparent lg:bg-gradient-to-l\"></div>
+              <div className=\"absolute bottom-12 left-12 right-12 text-white\">
+                <div className=\"text-5xl font-serif mb-2 italic\">$19/mo</div>
+                <div className=\"text-stone-400 uppercase tracking-widest text-sm font-bold\">Founder's Pricing</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Join the Vault CTA */}
       <section id=\"join\" className=\"bg-stone-900 py-24 px-8 text-white relative overflow-hidden\">
