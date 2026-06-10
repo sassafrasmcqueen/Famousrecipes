@@ -5,7 +5,7 @@ import path from 'path';
 
 const app = express();
 const port = 3001;
-const purchasesFile = '/home/team/shared/simulated_purchases.json';
+const purchasesFile = '/home/team/shared/waitlist.json';
 
 app.use(cors());
 app.use(express.json());

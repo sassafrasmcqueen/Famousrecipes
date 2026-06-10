@@ -296,7 +296,7 @@ function App() {
                 </div>
                 <h2 className="text-3xl font-serif text-stone-800 mb-4">You're in the Vault!</h2>
                 <p className="text-stone-600 mb-8">
-                  Check your inbox. We've emailed your digital recipe card for <span className="font-bold">{selectedRecipe?.title}</span> shortly.
+                  We'll email your digital recipe card for <span className="font-bold">{selectedRecipe?.title}</span> shortly.
                 </p>
                 <button 
                   onClick={() => setIsModalOpen(false)}
