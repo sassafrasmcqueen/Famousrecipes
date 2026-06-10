@@ -73,8 +73,12 @@ function App() {
   const [email, setEmail] = useState('')
   const [isSuccess, setIsSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  
+  const [waitlistEmail, setWaitlistEmail] = useState('')
+  const [waitlistSuccess, setWaitlistSuccess] = useState(false)
 
-  const categories = ['All', 'Launch Classics', 'Burger Wars', 'Diner Classics']
+  // Explicitly defined categories to maintain order, including future ones
+  const categories = ['All', 'Launch Classics', 'Burger Wars', 'Diner Classics', 'Michelin-Inspired Entrees']
 
   const filteredRecipes = activeCategory === 'All' 
     ? recipes 
@@ -102,7 +106,7 @@ function App() {
         body: JSON.stringify({
           recipeTitle: selectedRecipe.title,
           email: email,
-          price: '$2.99'
+          price: '.99'
         }),
       })
 
@@ -113,8 +117,35 @@ function App() {
       }
     } catch (error) {
       console.error('Error processing purchase:', error)
-      // Fallback for demo if server isn't running
-      setIsSuccess(true)
+      setIsSuccess(true) // Fallback
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleWaitlistJoin = async (e) => {
+    e.preventDefault()
+    if (!waitlistEmail) return
+
+    setIsSubmitting(true)
+    try {
+      const response = await fetch('http://localhost:3001/api/purchase', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          recipeTitle: 'Waitlist Join',
+          email: waitlistEmail,
+          price: 'N/A'
+        }),
+      })
+      if (response.ok) {
+        setWaitlistSuccess(true)
+      }
+    } catch (error) {
+      console.error('Error joining waitlist:', error)
+      setWaitlistSuccess(true)
     } finally {
       setIsSubmitting(false)
     }
@@ -198,7 +229,7 @@ function App() {
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                 />
                 <div className="absolute top-4 right-4 bg-orange-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
-                  Digital Card — $2.99
+                  Digital Card — .99
                 </div>
                 <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm text-stone-800 text-[9px] font-black uppercase tracking-tighter px-2 py-0.5 rounded shadow-sm">
                   {recipe.category}
@@ -260,47 +291,47 @@ function App() {
                   </div>
                   <div className="flex justify-between items-center text-sm mt-2">
                     <span className="text-stone-500">Price:</span>
-                    <span className="font-bold text-orange-600">$2.99</span>
+                    <span className="font-bold text-orange-600">.99</span>
                   </div>
                 </div>
 
                 <form onSubmit={handlePurchase}>
-                  <div className="mb-6">
-                    <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Delivery Email</label>
+                  <div className=\"mb-6\">
+                    <label className=\"block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2\">Delivery Email</label>
                     <input 
-                      type="email" 
+                      type=\"email\" 
                       required
-                      placeholder="chef@example.com"
+                      placeholder=\"chef@example.com\"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:outline-none focus:border-orange-600 transition"
+                      className=\"w-full px-4 py-3 rounded-lg border border-stone-200 focus:outline-none focus:border-orange-600 transition\"
                     />
                   </div>
                   <button 
                     disabled={isSubmitting}
-                    className="w-full bg-orange-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20 disabled:opacity-50"
+                    className=\"w-full bg-orange-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20 disabled:opacity-50\"
                   >
-                    {isSubmitting ? 'Processing...' : 'Complete Purchase — $2.99'}
+                    {isSubmitting ? 'Processing...' : 'Complete Purchase — .99'}
                   </button>
                 </form>
-                <p className="text-center text-[10px] text-stone-400 mt-6 uppercase tracking-tighter">
+                <p className=\"text-center text-[10px] text-stone-400 mt-6 uppercase tracking-tighter\">
                   Secure simulated payment powered by VaultPay
                 </p>
               </div>
             ) : (
-              <div className="p-12 text-center">
-                <div className="inline-block bg-green-100 text-green-600 p-4 rounded-full mb-6">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              <div className=\"p-12 text-center\">
+                <div className=\"inline-block bg-green-100 text-green-600 p-4 rounded-full mb-6\">
+                  <svg xmlns=\"http://www.w3.org/2000/svg\" className=\"h-12 w-12\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\">
+                    <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={3} d=\"M5 13l4 4L19 7\" />
                   </svg>
                 </div>
-                <h2 className="text-3xl font-serif text-stone-800 mb-4">You're in the Vault!</h2>
-                <p className="text-stone-600 mb-8">
-                  We'll email your digital recipe card for <span className="font-bold">{selectedRecipe?.title}</span> shortly.
+                <h2 className=\"text-3xl font-serif text-stone-800 mb-4\">You're in the Vault!</h2>
+                <p className=\"text-stone-600 mb-8\">
+                  We'll email your digital recipe card for <span className=\"font-bold\">{selectedRecipe?.title}</span> shortly.
                 </p>
                 <button 
                   onClick={() => setIsModalOpen(false)}
-                  className="bg-stone-900 text-white px-8 py-3 rounded-full font-bold hover:bg-stone-800 transition"
+                  className=\"bg-stone-900 text-white px-8 py-3 rounded-full font-bold hover:bg-stone-800 transition\"
                 >
                   Back to Collection
                 </button>
@@ -311,29 +342,43 @@ function App() {
       )}
 
       {/* Join the Vault CTA */}
-      <section id="join" className="bg-stone-900 py-24 px-8 text-white relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-600 to-transparent"></div>
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl font-serif mb-6">Access The Vault</h2>
-          <p className="text-stone-400 text-lg mb-10">
+      <section id=\"join\" className=\"bg-stone-900 py-24 px-8 text-white relative overflow-hidden\">
+        <div className=\"absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-600 to-transparent\"></div>
+        <div className=\"max-w-4xl mx-auto text-center relative z-10\">
+          <h2 className=\"text-4xl font-serif mb-6\">Access The Vault</h2>
+          <p className=\"text-stone-400 text-lg mb-10\">
             Get unlimited access to our full archive, early recipe drops, and exclusive video walkthroughs. Join the waitlist for our upcoming membership.
           </p>
-          <form className="flex flex-col md:flex-row gap-4 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
-            <input 
-              type="email" 
-              placeholder="Enter your email" 
-              className="bg-white/5 border border-white/20 rounded-md px-6 py-4 flex-grow focus:outline-none focus:border-orange-600 transition"
-            />
-            <button className="bg-orange-600 text-white px-8 py-4 rounded-md font-bold hover:bg-orange-700 transition shadow-lg">
-              Join Waitlist
-            </button>
-          </form>
-          <p className="mt-6 text-stone-500 text-sm">No spam. Only secret sauce.</p>
+          
+          {!waitlistSuccess ? (
+            <form className=\"flex flex-col md:flex-row gap-4 max-w-md mx-auto\" onSubmit={handleWaitlistJoin}>
+              <input 
+                type=\"email\" 
+                required
+                placeholder=\"Enter your email\" 
+                value={waitlistEmail}
+                onChange={(e) => setWaitlistEmail(e.target.value)}
+                className=\"bg-white/5 border border-white/20 rounded-md px-6 py-4 flex-grow focus:outline-none focus:border-orange-600 transition\"
+              />
+              <button 
+                disabled={isSubmitting}
+                className=\"bg-orange-600 text-white px-8 py-4 rounded-md font-bold hover:bg-orange-700 transition shadow-lg disabled:opacity-50\"
+              >
+                {isSubmitting ? 'Joining...' : 'Join Waitlist'}
+              </button>
+            </form>
+          ) : (
+            <div className=\"text-green-500 font-bold text-xl animate-bounce\">
+              Welcome to the Vault! We'll notify you soon.
+            </div>
+          )}
+          
+          <p className=\"mt-6 text-stone-500 text-sm\">No spam. Only secret sauce.</p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-8 border-t border-stone-200 text-center text-stone-500 text-sm uppercase tracking-widest">
+      <footer className=\"py-12 px-8 border-t border-stone-200 text-center text-stone-500 text-sm uppercase tracking-widest\">
         &copy; {new Date().getFullYear()} Signature Vault. All rights reserved.
       </footer>
     </div>
