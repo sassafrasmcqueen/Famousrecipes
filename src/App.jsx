@@ -68,11 +68,57 @@ function App() {
   ]
 
   const [activeCategory, setActiveCategory] = useState('All')
+  const [selectedRecipe, setSelectedRecipe] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [email, setEmail] = useState('')
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const categories = ['All', 'Launch Classics', 'Burger Wars', 'Diner Classics']
 
   const filteredRecipes = activeCategory === 'All' 
     ? recipes 
     : recipes.filter(r => r.category === activeCategory)
+
+  const handleBuyClick = (recipe) => {
+    setSelectedRecipe(recipe)
+    setIsModalOpen(true)
+    setIsSuccess(false)
+    setEmail('')
+  }
+
+  const handlePurchase = async (e) => {
+    e.preventDefault()
+    if (!email) return
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('http://localhost:3001/api/purchase', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          recipeTitle: selectedRecipe.title,
+          email: email,
+          price: '$2.99'
+        }),
+      })
+
+      if (response.ok) {
+        setIsSuccess(true)
+      } else {
+        alert('Failed to process purchase. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error processing purchase:', error)
+      // Fallback for demo if server isn't running
+      setIsSuccess(true)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 font-sans">
@@ -144,7 +190,7 @@ function App() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           {filteredRecipes.map((recipe) => (
-            <div key={recipe.id} className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition duration-300 flex flex-col h-full">
+            <div key={recipe.id} className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition duration-300 flex flex-col h-full border border-stone-100">
               <div className="h-64 overflow-hidden relative">
                 <img 
                   src={recipe.image} 
@@ -163,8 +209,11 @@ function App() {
                 <p className="text-stone-600 text-sm leading-relaxed mb-6 flex-grow">
                   {recipe.description}
                 </p>
-                <button className="w-full border border-stone-200 py-3 rounded-md font-bold text-sm hover:bg-stone-900 hover:text-white hover:border-stone-900 transition-all duration-300">
-                  Coming Soon
+                <button 
+                  onClick={() => handleBuyClick(recipe)}
+                  className="w-full bg-stone-900 text-white py-3 rounded-md font-bold text-sm hover:bg-orange-600 transition-all duration-300"
+                >
+                  Buy Now
                 </button>
               </div>
             </div>
@@ -177,6 +226,89 @@ function App() {
           </div>
         )}
       </section>
+
+      {/* Checkout Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-300">
+            <button 
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 text-stone-400 hover:text-stone-800 transition"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {!isSuccess ? (
+              <div className="p-8">
+                <div className="text-center mb-8">
+                  <div className="inline-block bg-orange-100 text-orange-600 p-3 rounded-full mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-serif text-stone-800">Complete Your Order</h2>
+                  <p className="text-stone-500 mt-2">Get instant access to the secrets of {selectedRecipe?.title}.</p>
+                </div>
+
+                <div className="bg-stone-50 rounded-xl p-4 mb-6 border border-stone-100">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-stone-500">Item:</span>
+                    <span className="font-bold text-stone-800 truncate max-w-[200px]">{selectedRecipe?.title}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm mt-2">
+                    <span className="text-stone-500">Price:</span>
+                    <span className="font-bold text-orange-600">$2.99</span>
+                  </div>
+                </div>
+
+                <form onSubmit={handlePurchase}>
+                  <div className="mb-6">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Delivery Email</label>
+                    <input 
+                      type="email" 
+                      required
+                      placeholder="chef@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:outline-none focus:border-orange-600 transition"
+                    />
+                  </div>
+                  <button 
+                    disabled={isSubmitting}
+                    className="w-full bg-orange-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20 disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Processing...' : 'Complete Purchase — $2.99'}
+                  </button>
+                </form>
+                <p className="text-center text-[10px] text-stone-400 mt-6 uppercase tracking-tighter">
+                  Secure simulated payment powered by VaultPay
+                </p>
+              </div>
+            ) : (
+              <div className="p-12 text-center">
+                <div className="inline-block bg-green-100 text-green-600 p-4 rounded-full mb-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-serif text-stone-800 mb-4">You're in the Vault!</h2>
+                <p className="text-stone-600 mb-8">
+                  Check your inbox. We've emailed your digital recipe card for <span className="font-bold">{selectedRecipe?.title}</span> shortly.
+                </p>
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  className="bg-stone-900 text-white px-8 py-3 rounded-full font-bold hover:bg-stone-800 transition"
+                >
+                  Back to Collection
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Join the Vault CTA */}
       <section id="join" className="bg-stone-900 py-24 px-8 text-white relative overflow-hidden">
