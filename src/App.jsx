@@ -65,6 +65,13 @@ function App() {
       image: '/images/juniors-cheesecake.png',
       category: 'Diner Classics'
     },
+    {
+      id: 10,
+      title: 'The French Laundry Oysters and Pearls',
+      description: 'Thomas Keller’s legendary "sabayon of pearl tapioca with Beau Soleil oysters and white sturgeon caviar." The pinnacle of fine dining at home.',
+      image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=800',
+      category: 'Michelin-Inspired Entrees'
+    },
   ]
 
   const [activeCategory, setActiveCategory] = useState('All')
@@ -77,7 +84,6 @@ function App() {
   const [waitlistEmail, setWaitlistEmail] = useState('')
   const [waitlistSuccess, setWaitlistSuccess] = useState(false)
 
-  // Explicitly defined categories to maintain order, including future ones
   const categories = ['All', 'Launch Classics', 'Burger Wars', 'Diner Classics', 'Michelin-Inspired Entrees']
 
   const filteredRecipes = activeCategory === 'All' 
@@ -117,7 +123,7 @@ function App() {
       }
     } catch (error) {
       console.error('Error processing purchase:', error)
-      setIsSuccess(true) // Fallback
+      setIsSuccess(true) // Fallback for demo
     } finally {
       setIsSubmitting(false)
     }
