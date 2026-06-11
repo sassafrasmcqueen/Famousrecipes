@@ -69,14 +69,71 @@ function App() {
       id: 10,
       title: 'The French Laundry Oysters and Pearls',
       description: 'Thomas Keller’s legendary "sabayon of pearl tapioca with Beau Soleil oysters and white sturgeon caviar." The pinnacle of fine dining at home.',
-      image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=800',
+      image: '/images/french-laundry-oysters-pearls.png',
       category: 'Michelin-Inspired Entrees'
+    },
+    {
+      id: 11,
+      title: "Gordon Ramsay's Beef Wellington",
+      description: "The crown jewel of Gordon Ramsay's Savoy Grill, this dish is a masterclass in precision, timing, and luxury. It features tender beef fillet, earthy mushroom duxelles, salty Parma ham, and buttery, golden puff pastry.",
+      image: '/images/savoy-beef-wellington.png',
+      category: 'Michelin-Inspired Entrees'
+    },
+    {
+      id: 12,
+      title: "Eleven Madison Park's Roasted Duck",
+      description: "Formerly the signature dish of NYC's Eleven Madison Park, this honey-lavender duck is legendary for its incredibly thin, glass-like skin and aromatic spice crust. It is a multi-day process that represents the pinnacle of high-end poultry preparation.",
+      image: '/images/emp-roasted-duck.png',
+      category: 'Michelin-Inspired Entrees'
+    },
+{
+        'id': 13,
+        'title': 'The Halal Guys Chicken and Rice',
+        'description': 'The definitive NYC street food experience. Aromatic yellow rice, perfectly charred chicken, and the legendary white sauce that brings it all together.',
+        'image': '/images/halal-guys-chicken-rice.png',
+        'category': 'Global Street Food Icons'
+    },
+    {
+        'id': 14,
+        'title': 'Din Tai Fung Spicy Shrimp & Pork Wontons',
+        'description': 'World-renowned Taiwanese wontons in a signature spicy sauce. A perfect balance of savory pork, snap-fresh shrimp, and a complex chili-vinegar glaze.',
+        'image': '/images/din-tai-fung-wontons.png',
+        'category': 'Global Street Food Icons'
+    },
+    {
+        'id': 15,
+        'title': "Nando's Style Peri-Peri Chicken",
+        'description': "The soul of South African-Portuguese fusion. Flame-grilled chicken with the addictive, tangy heat of the Bird's Eye chili (Peri-Peri).",
+        'image': '/images/nandos-peri-peri-chicken.png',
+        'category': 'Global Street Food Icons'
+    },
+    {
+        'id': 16,
+        'title': "Peter Luger Style 'Steak for Two'",
+        'description': "The definitive Brooklyn steakhouse experience. A thick-cut Porterhouse with a deep crust and the iconic sizzling butter finish.",
+        'image': '/images/peter-luger-steak.png',
+        'category': 'American Steakhouse Staples'
+    },
+    {
+        'id': 17,
+        'title': "Bern's Style French Onion Soup",
+        'description': "A masterpiece of patience from Tampa's icon. A 48-hour veal stock base with 12-hour caramelized onions and a triple-cheese crust.",
+        'image': '/images/berns-french-onion-soup.png',
+        'category': 'American Steakhouse Staples'
+    },
+    {
+        'id': 18,
+        'title': "Ruth's Chris Style Creamed Spinach",
+        'description': "A legendary side dish with a cult following. Incredibly smooth, rich, and perfectly seasoned with a subtle hint of nutmeg.",
+        'image': '/images/ruths-chris-creamed-spinach.png',
+        'category': 'American Steakhouse Staples'
     },
   ]
 
   const [activeCategory, setActiveCategory] = useState('All')
   const [selectedRecipe, setSelectedRecipe] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isBundleModalOpen, setIsBundleModalOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [isSuccess, setIsSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -86,7 +143,7 @@ function App() {
   const [membershipEmail, setMembershipEmail] = useState('')
   const [membershipSuccess, setMembershipSuccess] = useState(false)
 
-  const categories = ['All', 'Launch Classics', 'Burger Wars', 'Diner Classics', 'Michelin-Inspired Entrees']
+  const categories = ['All', 'Launch Classics', 'Burger Wars', 'Diner Classics', 'Michelin-Inspired Entrees', 'Global Street Food Icons', 'American Steakhouse Staples']
 
   const filteredRecipes = activeCategory === 'All' 
     ? recipes 
@@ -95,6 +152,12 @@ function App() {
   const handleBuyClick = (recipe) => {
     setSelectedRecipe(recipe)
     setIsModalOpen(true)
+    setIsSuccess(false)
+    setEmail('')
+  }
+
+  const handleBuyBundleClick = () => {
+    setIsBundleModalOpen(true)
     setIsSuccess(false)
     setEmail('')
   }
@@ -140,7 +203,7 @@ function App() {
         body: JSON.stringify({
           recipeTitle: selectedRecipe.title,
           email: email,
-          price: '.99'
+          price: '2.99'
         }),
       })
 
@@ -151,6 +214,38 @@ function App() {
       }
     } catch (error) {
       console.error('Error processing purchase:', error)
+      setIsSuccess(true) // Fallback for demo
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleBundlePurchase = async (e) => {
+    e.preventDefault()
+    if (!email) return
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('http://localhost:3001/api/bundle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          category: activeCategory,
+          email: email,
+          price: '6.99'
+        }),
+      })
+
+      if (response.ok) {
+        setIsSuccess(true)
+      } else {
+        alert('Failed to process bundle purchase. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error processing bundle purchase:', error)
       setIsSuccess(true) // Fallback for demo
     } finally {
       setIsSubmitting(false)
@@ -253,6 +348,25 @@ function App() {
           ))}
         </div>
 
+        {/* Category Bundle CTA */}
+        {activeCategory !== 'All' && filteredRecipes.length > 0 && (
+          <div className="mb-12 bg-orange-50 border border-orange-100 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between shadow-sm">
+            <div className="mb-6 md:mb-0">
+              <h3 className="text-2xl font-serif text-stone-800 mb-2">The {activeCategory} Bundle</h3>
+              <p className="text-stone-600">Unlock every recipe in this collection for one low price. Perfect for mastering the genre.</p>
+            </div>
+            <div className="flex flex-col items-center md:items-end">
+              <div className="text-3xl font-bold text-orange-600 mb-2">$6.99</div>
+              <button 
+                onClick={handleBuyBundleClick}
+                className="bg-stone-900 text-white px-8 py-3 rounded-full font-bold hover:bg-orange-600 transition shadow-lg whitespace-nowrap"
+              >
+                Buy Category Bundle
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           {filteredRecipes.map((recipe) => (
             <div key={recipe.id} className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition duration-300 flex flex-col h-full border border-stone-100">
@@ -263,7 +377,7 @@ function App() {
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                 />
                 <div className="absolute top-4 right-4 bg-orange-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
-                  Digital Card — .99
+                  Digital Card — 2.99
                 </div>
                 <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm text-stone-800 text-[9px] font-black uppercase tracking-tighter px-2 py-0.5 rounded shadow-sm">
                   {recipe.category}
@@ -325,47 +439,47 @@ function App() {
                   </div>
                   <div className="flex justify-between items-center text-sm mt-2">
                     <span className="text-stone-500">Price:</span>
-                    <span className="font-bold text-orange-600">.99</span>
+                    <span className="font-bold text-orange-600">2.99</span>
                   </div>
                 </div>
 
                 <form onSubmit={handlePurchase}>
-                  <div className=\"mb-6\">
-                    <label className=\"block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2\">Delivery Email</label>
+                  <div className="mb-6">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Delivery Email</label>
                     <input 
-                      type=\"email\" 
+                      type="email" 
                       required
-                      placeholder=\"chef@example.com\"
+                      placeholder="chef@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className=\"w-full px-4 py-3 rounded-lg border border-stone-200 focus:outline-none focus:border-orange-600 transition\"
+                      className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:outline-none focus:border-orange-600 transition"
                     />
                   </div>
                   <button 
                     disabled={isSubmitting}
-                    className=\"w-full bg-orange-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20 disabled:opacity-50\"
+                    className="w-full bg-orange-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20 disabled:opacity-50"
                   >
-                    {isSubmitting ? 'Processing...' : 'Complete Purchase — .99'}
+                    {isSubmitting ? 'Processing...' : 'Complete Purchase — 2.99'}
                   </button>
                 </form>
-                <p className=\"text-center text-[10px] text-stone-400 mt-6 uppercase tracking-tighter\">
+                <p className="text-center text-[10px] text-stone-400 mt-6 uppercase tracking-tighter">
                   Secure simulated payment powered by VaultPay
                 </p>
               </div>
             ) : (
-              <div className=\"p-12 text-center\">
-                <div className=\"inline-block bg-green-100 text-green-600 p-4 rounded-full mb-6\">
-                  <svg xmlns=\"http://www.w3.org/2000/svg\" className=\"h-12 w-12\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\">
-                    <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={3} d=\"M5 13l4 4L19 7\" />
+              <div className="p-12 text-center">
+                <div className="inline-block bg-green-100 text-green-600 p-4 rounded-full mb-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h2 className=\"text-3xl font-serif text-stone-800 mb-4\">You're in the Vault!</h2>
-                <p className=\"text-stone-600 mb-8\">
-                  We'll email your digital recipe card for <span className=\"font-bold\">{selectedRecipe?.title}</span> shortly.
+                <h2 className="text-3xl font-serif text-stone-800 mb-4">You're in the Vault!</h2>
+                <p className="text-stone-600 mb-8">
+                  We'll email your digital recipe card for <span className="font-bold">{selectedRecipe?.title}</span> shortly.
                 </p>
                 <button 
                   onClick={() => setIsModalOpen(false)}
-                  className=\"bg-stone-900 text-white px-8 py-3 rounded-full font-bold hover:bg-stone-800 transition\"
+                  className="bg-stone-900 text-white px-8 py-3 rounded-full font-bold hover:bg-stone-800 transition"
                 >
                   Back to Collection
                 </button>
@@ -388,63 +502,63 @@ function App() {
                 For the serious home cook. Get everything you need to master the world's most iconic dishes in one place.
               </p>
               
-              <ul className=\"space-y-6 mb-12\">
+              <ul className="space-y-6 mb-12">
                 {[
                   { title: 'Unlimited Access', desc: 'The full digital archive of 100+ iconic recipes.' },
                   { title: 'Early Drops', desc: 'Be the first to cook new releases 7 days before the store.' },
                   { title: 'Video Walkthroughs', desc: 'Pro-shot, step-by-step tutorials for every dish.' },
                   { title: 'Secret Ingredient Sourcing', desc: 'Know exactly where to buy that specific NYC flour or French butter.' }
                 ].map((item, i) => (
-                  <li key={i} className=\"flex items-start\">
-                    <div className=\"bg-orange-600 rounded-full p-1 mr-4 mt-1\">
-                      <svg xmlns=\"http://www.w3.org/2000/svg\" className=\"h-4 w-4 text-white\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\">
-                        <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={3} d=\"M5 13l4 4L19 7\" />
+                  <li key={i} className="flex items-start">
+                    <div className="bg-orange-600 rounded-full p-1 mr-4 mt-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
                     <div>
-                      <h4 className=\"font-bold text-stone-800\">{item.title}</h4>
-                      <p className=\"text-stone-500 text-sm\">{item.desc}</p>
+                      <h4 className="font-bold text-stone-800">{item.title}</h4>
+                      <p className="text-stone-500 text-sm">{item.desc}</p>
                     </div>
                   </li>
                 ))}
               </ul>
 
               {!membershipSuccess ? (
-                <form onSubmit={handleMembershipJoin} className=\"flex flex-col sm:flex-row gap-4\">
+                <form onSubmit={handleMembershipJoin} className="flex flex-col sm:flex-row gap-4">
                   <input 
-                    type=\"email\" 
+                    type="email" 
                     required
-                    placeholder=\"Enter your email\" 
+                    placeholder="Enter your email" 
                     value={membershipEmail}
                     onChange={(e) => setMembershipEmail(e.target.value)}
-                    className=\"flex-grow px-6 py-4 rounded-xl border border-stone-200 focus:outline-none focus:border-orange-600 transition\"
+                    className="flex-grow px-6 py-4 rounded-xl border border-stone-200 focus:outline-none focus:border-orange-600 transition"
                   />
                   <button 
                     disabled={isSubmitting}
-                    className=\"bg-stone-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-600 transition-all shadow-lg disabled:opacity-50 whitespace-nowrap\"
+                    className="bg-stone-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-600 transition-all shadow-lg disabled:opacity-50 whitespace-nowrap"
                   >
                     {isSubmitting ? 'Joining...' : 'Join The Vault'}
                   </button>
                 </form>
               ) : (
-                <div className=\"bg-green-50 border border-green-200 text-green-700 p-6 rounded-2xl flex items-center\">
-                  <svg xmlns=\"http://www.w3.org/2000/svg\" className=\"h-6 w-6 mr-3 flex-shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\">
-                    <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={2} d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\" />
+                <div className="bg-green-50 border border-green-200 text-green-700 p-6 rounded-2xl flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span className=\"font-medium\">You're on the list! We'll invite you when the doors open.</span>
+                  <span className="font-medium">You're on the list! We'll invite you when the doors open.</span>
                 </div>
               )}
             </div>
-            <div className=\"lg:w-1/2 bg-stone-900 relative min-h-[400px]\">
+            <div className="lg:w-1/2 bg-stone-900 relative min-h-[400px]">
               <img 
-                src=\"https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=1200\" 
-                alt=\"Chef at work\" 
-                className=\"absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity\"
+                src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=1200" 
+                alt="Chef at work" 
+                className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity"
               />
-              <div className=\"absolute inset-0 bg-gradient-to-t from-stone-900 via-transparent to-transparent lg:bg-gradient-to-l\"></div>
-              <div className=\"absolute bottom-12 left-12 right-12 text-white\">
-                <div className=\"text-5xl font-serif mb-2 italic\">$19/mo</div>
-                <div className=\"text-stone-400 uppercase tracking-widest text-sm font-bold\">Founder's Pricing</div>
+              <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-transparent to-transparent lg:bg-gradient-to-l"></div>
+              <div className="absolute bottom-12 left-12 right-12 text-white">
+                <div className="text-5xl font-serif mb-2 italic">$19/mo</div>
+                <div className="text-stone-400 uppercase tracking-widest text-sm font-bold">Founder's Pricing</div>
               </div>
             </div>
           </div>
@@ -452,43 +566,43 @@ function App() {
       </section>
 
       {/* Join the Vault CTA */}
-      <section id=\"join\" className=\"bg-stone-900 py-24 px-8 text-white relative overflow-hidden\">
-        <div className=\"absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-600 to-transparent\"></div>
-        <div className=\"max-w-4xl mx-auto text-center relative z-10\">
-          <h2 className=\"text-4xl font-serif mb-6\">Access The Vault</h2>
-          <p className=\"text-stone-400 text-lg mb-10\">
+      <section id="join" className="bg-stone-900 py-24 px-8 text-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-600 to-transparent"></div>
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="text-4xl font-serif mb-6">Access The Vault</h2>
+          <p className="text-stone-400 text-lg mb-10">
             Get unlimited access to our full archive, early recipe drops, and exclusive video walkthroughs. Join the waitlist for our upcoming membership.
           </p>
           
           {!waitlistSuccess ? (
-            <form className=\"flex flex-col md:flex-row gap-4 max-w-md mx-auto\" onSubmit={handleWaitlistJoin}>
+            <form className="flex flex-col md:flex-row gap-4 max-w-md mx-auto" onSubmit={handleWaitlistJoin}>
               <input 
-                type=\"email\" 
+                type="email" 
                 required
-                placeholder=\"Enter your email\" 
+                placeholder="Enter your email" 
                 value={waitlistEmail}
                 onChange={(e) => setWaitlistEmail(e.target.value)}
-                className=\"bg-white/5 border border-white/20 rounded-md px-6 py-4 flex-grow focus:outline-none focus:border-orange-600 transition\"
+                className="bg-white/5 border border-white/20 rounded-md px-6 py-4 flex-grow focus:outline-none focus:border-orange-600 transition"
               />
               <button 
                 disabled={isSubmitting}
-                className=\"bg-orange-600 text-white px-8 py-4 rounded-md font-bold hover:bg-orange-700 transition shadow-lg disabled:opacity-50\"
+                className="bg-orange-600 text-white px-8 py-4 rounded-md font-bold hover:bg-orange-700 transition shadow-lg disabled:opacity-50"
               >
                 {isSubmitting ? 'Joining...' : 'Join Waitlist'}
               </button>
             </form>
           ) : (
-            <div className=\"text-green-500 font-bold text-xl animate-bounce\">
+            <div className="text-green-500 font-bold text-xl animate-bounce">
               Welcome to the Vault! We'll notify you soon.
             </div>
           )}
           
-          <p className=\"mt-6 text-stone-500 text-sm\">No spam. Only secret sauce.</p>
+          <p className="mt-6 text-stone-500 text-sm">No spam. Only secret sauce.</p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className=\"py-12 px-8 border-t border-stone-200 text-center text-stone-500 text-sm uppercase tracking-widest\">
+      <footer className="py-12 px-8 border-t border-stone-200 text-center text-stone-500 text-sm uppercase tracking-widest">
         &copy; {new Date().getFullYear()} Signature Vault. All rights reserved.
       </footer>
     </div>
