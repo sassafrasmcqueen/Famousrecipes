@@ -290,7 +290,7 @@ function App() {
         <div className="hidden md:flex space-x-8 text-sm font-medium uppercase tracking-widest">
           <a href="#recipes" className="hover:text-orange-600 transition">Recipes</a>
           <a href="#about" className="hover:text-orange-600 transition">About</a>
-          <a href="#join" className="hover:text-orange-600 transition">The Vault</a>
+          <a href="#membership" className="hover:text-orange-600 transition">The Vault</a>
         </div>
         <button className="bg-stone-900 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-stone-800 transition">
           Sign In
@@ -355,11 +355,11 @@ function App() {
               <h3 className="text-2xl font-serif text-stone-800 mb-2">The {activeCategory} Bundle</h3>
               <p className="text-stone-600">Unlock every recipe in this collection for one low price. Perfect for mastering the genre.</p>
             </div>
-            <div className="flex flex-col items-center md:items-end">
+            <div className="flex flex-col items-center md:items-end w-full md:w-auto">
               <div className="text-3xl font-bold text-orange-600 mb-2">$6.99</div>
               <button 
                 onClick={handleBuyBundleClick}
-                className="bg-stone-900 text-white px-8 py-3 rounded-full font-bold hover:bg-orange-600 transition shadow-lg whitespace-nowrap"
+                className="bg-stone-900 text-white px-8 py-3 rounded-full font-bold hover:bg-orange-600 transition shadow-lg whitespace-nowrap w-full md:w-auto"
               >
                 Buy Category Bundle
               </button>
@@ -490,7 +490,7 @@ function App() {
       )}
 
       {/* Membership Section */}
-      <section className="py-24 px-8 bg-stone-100">
+      <section id="membership" className="py-24 px-8 bg-stone-100">
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col lg:flex-row border border-stone-200">
             <div className="lg:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
@@ -549,17 +549,80 @@ function App() {
                 </div>
               )}
             </div>
-            <div className="lg:w-1/2 bg-stone-900 relative min-h-[400px]">
-              <img 
-                src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=1200" 
-                alt="Chef at work" 
-                className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-transparent to-transparent lg:bg-gradient-to-l"></div>
-              <div className="absolute bottom-12 left-12 right-12 text-white">
+            
+            <div className="lg:w-1/2 bg-stone-900 relative min-h-[300px] lg:min-h-[500px]">
+              <div className="absolute inset-0 z-0">
+                <img 
+                  src="/images/momofuku-pork-buns.png" 
+                  alt="Featured Member Recipe Teaser" 
+                  className="w-full h-full object-cover opacity-60 mix-blend-luminosity blur-md scale-105"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/40 to-transparent"></div>
+              
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center text-white z-10">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl max-w-sm">
+                  <span className="text-orange-500 font-bold uppercase tracking-widest text-xs mb-2 block">Member Exclusive Teaser</span>
+                  <h3 className="text-3xl font-serif mb-4">Momofuku Pork Belly Buns</h3>
+                  <p className="text-stone-300 text-sm mb-6 font-light">David Chang's legendary soft buns and glazed belly. Available only to Vault members.</p>
+                  <div className="inline-flex items-center text-orange-500 font-bold text-sm">
+                    Coming in the first drop <span className="ml-2">→</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="absolute bottom-12 left-12 right-12 text-white z-10 hidden md:block">
                 <div className="text-5xl font-serif mb-2 italic">$19/mo</div>
                 <div className="text-stone-400 uppercase tracking-widest text-sm font-bold">Founder's Pricing</div>
               </div>
+            </div>
+          </div>
+
+          {/* Testimonials */}
+          <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { name: "Sarah L.", role: "Home Cook", quote: "The Levain cookie recipe is spot on. I've tried dozens of copycats, but Signature Vault finally got the texture right." },
+              { name: "Marcus T.", role: "Weekend Chef", quote: "The video walkthroughs in the membership are a game changer. Seeing the technique for the Beef Wellington made it feel achievable." },
+              { name: "Elena G.", role: "Foodie", quote: "I missed the Din Tai Fung wontons so much after moving. This recipe brought that exact flavor back into my kitchen." }
+            ].map((review, i) => (
+              <div key={i} className="bg-white p-8 rounded-2xl border border-stone-200 shadow-sm">
+                <div className="flex text-orange-500 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 fill-current" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <p className="text-stone-600 italic mb-6">"{review.quote}"</p>
+                <div>
+                  <h4 className="font-bold text-stone-800">{review.name}</h4>
+                  <p className="text-stone-400 text-xs uppercase tracking-widest">{review.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Coming Soon Bundle Teaser */}
+      <section className="py-24 px-8 border-t border-stone-200">
+        <div className="max-w-4xl mx-auto bg-stone-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row">
+          <div className="md:w-1/3 relative h-64 md:h-auto">
+            <img 
+              src="/images/asian-noodle-teaser.png" 
+              alt="Asian Noodle Bar" 
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-orange-600/20 mix-blend-overlay"></div>
+          </div>
+          <div className="md:w-2/3 p-12 text-white flex flex-col justify-center">
+            <span className="text-orange-500 font-bold uppercase tracking-widest text-xs mb-2">Next Drop</span>
+            <h2 className="text-3xl font-serif mb-4">Asian Noodle Bar Classics</h2>
+            <p className="text-stone-400 mb-8 font-light">From Ippudo-style Ramen to Momofuku Ginger Scallion Noodles. Mastering the art of the perfect bowl.</p>
+            <div className="flex items-center gap-4">
+              <div className="h-px bg-stone-700 flex-grow"></div>
+              <span className="text-stone-500 text-sm uppercase tracking-tighter">Coming July 2026</span>
+              <div className="h-px bg-stone-700 flex-grow"></div>
             </div>
           </div>
         </div>
